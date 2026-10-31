@@ -22,8 +22,8 @@ Open <http://127.0.0.1:8000/>. Stop the server with Ctrl+C. If running from the 
 
 1. Choose a month and set a daily rain limit from 0 to 30 mm.
 2. Green dates have rain **at or below** that limit; other dates are above it. Every date shows the original daily amount, so colour is not the only feedback.
-3. Select a date to see its exact rain and the difference from your limit. Orange outlines the selection independently of whether it matches.
-4. Use **Find next matching day** to search forward within the month. The search wraps to the beginning with an explicit message. With no match, it suggests changing the limit or month. Repeated clicks move through matches; there are no network requests or accumulated side effects.
+3. Select a date to see its exact rain and the difference from your limit. The calendar help and legend explicitly identify the orange outline as your selection, independently of whether it matches.
+4. Use **Next match in this month** to search forward within the month. The search wraps to the beginning with an explicit message. With no match, it suggests changing the limit or month. Repeated clicks move through matches; there are no network requests or accumulated side effects.
 5. **Reset** restores 24 September and a 5 mm limit. No choices are persisted or transmitted.
 
 Keyboard: Tab moves between the month, slider, Reset, the selected date and the next-date button. Use the slider's arrow keys to change the limit, and arrow keys on a date to move one day or one week. Home/End selects the first/last day of the month. Date buttons announce the amount and whether it matches; a live status reports the result. The current calendar selection is one Tab stop, so reaching the next action does not require tabbing through every date.
@@ -51,4 +51,4 @@ The earlier assignment supplied the data and calendar idea. This new folder is i
 
 A daily total hides the time and duration of rain. One reanalysis grid cell is not a station observation or a citywide average. Matching a personal threshold says nothing about warnings, comfort or safety. The archive covers 2025 only. There is no hosted live version configured; the source can run locally with the command above.
 
-The assignment requires a trial with another person. That trial is pending and must be recorded from real observation before claiming the full assignment is complete. This folder lives inside the requested public course repository; submit the repository URL with a pointer to `rain-window/` and check any instructor-specific repository layout requirements.
+Classmate feedback relayed by the student is recorded in [PROCESS.md](PROCESS.md), together with the resulting selection-label and search-scope improvements. The revised wording has not yet been re-tested by that classmate. This folder lives inside the requested public course repository; submit the repository URL with a pointer to `rain-window/` and check any instructor-specific repository layout requirements.

@@ -89,7 +89,10 @@ $('find-next').addEventListener('click', () => {
   }
   const previous = state.day;
   state.day = found.day;
-  const lead = found.day === previous ? 'This is the only matching date.' : found.day < previous ? 'Wrapped to the start of the month.' : 'Found your next matching date.';
+  const month = monthNames[state.month - 1];
+  const lead = found.day === previous ? `This is the only matching date in ${month}.`
+    : found.day < previous ? `Wrapped to the start of ${month}; the search stays in this month.`
+    : `Next match in ${month}.`;
   render(`${lead} ${dateLabel(found)}: ${found.rain.toFixed(1)} mm.`);
 });
 $('calendar').addEventListener('keydown', event => {
