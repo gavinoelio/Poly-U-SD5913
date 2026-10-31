@@ -1,4 +1,4 @@
-import {YEAR, DEFAULTS, validateArchive, monthDays, withinLimit, nextMatch} from './engine.mjs';
+import {YEAR, DEFAULTS, validateArchive, monthDays, withinLimit, nextMatch} from './engine.js';
 
 const $ = id => document.getElementById(id);
 const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -35,6 +35,7 @@ function render(message) {
     button.type = 'button';
     button.className = `day${match ? ' is-match' : ''}${selected ? ' is-selected' : ''}`;
     button.dataset.day = record.day;
+    button.tabIndex = selected ? 0 : -1;
     button.setAttribute('aria-pressed', String(selected));
     button.setAttribute('aria-label', `${dateLabel(record)} ${YEAR}, ${record.rain.toFixed(1)} mm, ${match ? 'within' : 'above'} your limit`);
     const date = document.createElement('span');
@@ -91,6 +92,18 @@ $('find-next').addEventListener('click', () => {
   const lead = found.day === previous ? 'This is the only matching date.' : found.day < previous ? 'Wrapped to the start of the month.' : 'Found your next matching date.';
   render(`${lead} ${dateLabel(found)}: ${found.rain.toFixed(1)} mm.`);
 });
+$('calendar').addEventListener('keydown', event => {
+  const button = event.target.closest('button[data-day]');
+  if (!button) return;
+  const length = monthDays(archive, state.month).length;
+  const moves = {ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7};
+  if (!(event.key in moves) && event.key !== 'Home' && event.key !== 'End') return;
+  event.preventDefault();
+  state.day = event.key === 'Home' ? 1 : event.key === 'End' ? length
+    : Math.max(1, Math.min(length, Number(button.dataset.day) + moves[event.key]));
+  render();
+  $('calendar').querySelector(`[data-day="${state.day}"]`).focus({preventScroll:true});
+});
 $('reset').addEventListener('click', () => {
   Object.assign(state, DEFAULTS);
   render('Reset to 24 September and a 5 mm limit. Choose a date or find a matching day.');
@@ -103,16 +116,20 @@ async function loadArchive() {
   $('load-state').hidden = false;
   $('load-error').hidden = true;
   $('experience').hidden = true;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
   try {
-    const response = await fetch('./data/rainfall-2025.json');
+    const response = await fetch('./data/rainfall-2025.json', {signal: controller.signal, cache: 'no-store'});
     if (!response.ok) throw new Error(`The data file returned HTTP ${response.status}.`);
     archive = validateArchive(await response.json());
     render();
     $('experience').hidden = false;
   } catch (error) {
-    $('error-detail').textContent = `${error.message} Serve this folder over HTTP as described in README.md, then try again.`;
+    const reason = error.name === 'AbortError' ? 'Loading took longer than 8 seconds.' : error.message;
+    $('error-detail').textContent = `${reason} Serve this folder over HTTP as described in README.md, then try again.`;
     $('load-error').hidden = false;
   } finally {
+    clearTimeout(timeout);
     loading = false;
     $('retry').disabled = false;
     $('load-state').hidden = true;

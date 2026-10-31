@@ -1,0 +1,9 @@
+{
+  "name": "rain-window",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A buildless historical rainfall interaction for SD5913 Assignment 3",
+  "scripts": {"test": "node --test tests/engine.test.mjs"},
+  "engines": {"node": ">=18"}
+}
