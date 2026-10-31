@@ -4,6 +4,7 @@
 # ///
 """Read the committed snapshot and draw a twelve-month rainfall calendar."""
 import calendar
+import csv
 from datetime import date, timedelta
 import json
 import math
@@ -18,6 +19,7 @@ HERE = Path(__file__).resolve().parent
 DATA = HERE / "data" / "hong-kong-rain-2025.json"
 OUT = HERE / "out"
 PAPER, INK, MUTED = "#f6f3eb", "#163c3c", "#536a68"
+ACCENT = "#b45d25"
 COLORS = ["#e4e9e5", "#cee7df", "#a0d5c7", "#64b5a6", "#348e83", "#14645f", "#073d3d"]
 LABELS = ["0", ">0 to <1", "1 to <5", "5 to <15", "15 to <30", "30 to <60", "60+"]
 
@@ -49,6 +51,21 @@ def rain_color(value):
         if value < upper:
             return index
     return 6
+
+
+
+def export_monthly_summary(daily, path):
+    """Export exact monthly statistics, using the same >=1 mm wet-day rule."""
+    with path.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(["month", "total_rain_mm", "wet_days_ge_1mm",
+                         "wettest_date", "wettest_rain_mm"])
+        for month in range(1, 13):
+            days = {day: value for day, value in daily.items() if day.month == month}
+            wettest = max(days, key=days.get)
+            writer.writerow([f"2025-{month:02d}", f"{sum(days.values()):.1f}",
+                             sum(value >= 1 for value in days.values()),
+                             wettest.isoformat(), f"{days[wettest]:.1f}"])
 
 
 def main():
@@ -88,6 +105,9 @@ def main():
                 day = date(2025, month, number)
                 band = rain_color(daily[day])
                 ax.add_patch(Rectangle((col + .04, row + .04), .92, .92, facecolor=COLORS[band], linewidth=0))
+                if day == wettest:
+                    ax.add_patch(Rectangle((col + .04, row + .04), .92, .92,
+                                           fill=False, edgecolor=ACCENT, linewidth=2))
                 ax.text(col + .5, row + .52, str(number), va="center", ha="center", fontsize=8,
                         color="white" if band >= 4 else INK)
     fig.text(.055, .139, "DAILY RAIN / mm", fontsize=10, weight="bold", color=INK)
@@ -95,15 +115,19 @@ def main():
         x = .055 + i * .13
         fig.add_artist(Rectangle((x, .102), .024, .017, transform=fig.transFigure, facecolor=color, linewidth=0))
         fig.text(x + .03, .105, label, fontsize=9, color=INK)
+    fig.add_artist(Rectangle((.055, .157), .014, .014, transform=fig.transFigure,
+                             fill=False, edgecolor=ACCENT, linewidth=2))
+    fig.text(.076, .159, "Outlined square: wettest day of the year", fontsize=9, color=INK)
     fig.text(.055, .069, f"Wettest modelled day: {wettest:%d %b} · {daily[wettest]:.1f} mm.  Blank spaces fall outside the month.", fontsize=10, color=INK)
     fig.text(.055, .041, "Source: Open-Meteo / ERA5 · Hong Kong local dates · Location requested: 22.3193°N, 114.1694°E", fontsize=9, color=MUTED)
     fig.text(.055, .022, "Gridded reanalysis, not a station record. Colour bands compress differences; daily totals hide when rain fell within a day.", fontsize=9, color=MUTED)
     OUT.mkdir(exist_ok=True)
+    export_monthly_summary(daily, OUT / "rainfall-monthly-summary-2025.csv")
     for extension in ("png", "svg"):
         fig.savefig(OUT / f"rainfall-calendar-2025.{extension}", dpi=180, facecolor=PAPER)
     plt.close(fig)
     print(f"Validated {len(daily)} days; total {total:.1f} mm; {wet_days} days >=1 mm; May–Sep share {share:.2%}.")
-    print(f"Wettest: {wettest}, {daily[wettest]:.1f} mm. Saved PNG and SVG in {OUT}")
+    print(f"Wettest: {wettest}, {daily[wettest]:.1f} mm. Saved PNG, SVG and monthly summary CSV in {OUT}")
 
 
 if __name__ == "__main__":

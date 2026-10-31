@@ -27,3 +27,11 @@ The remaining student decisions are whether this visual style communicates the i
 The plotting command also succeeded with uv's offline mode after dependency installation. Additional temporary checks exercised colour-band boundaries and confirmed rejection of null rain, negative rain, duplicate dates, a missing value and incorrect units. The original data checksum remained unchanged after rendering.
 
 The official checker passed README, process, script and picture checks. On the uncommitted Windows subfolder its file fallback used backslashes, falsely reporting no data/ file; its history check read the parent essay repository. Calling the official content-check functions with normalised paths confirmed the draft's file requirements. This does not establish a passing submission: a standalone public repository and genuine rainfall-project commit history remain to be created.
+
+## Small feature update — 31 October 2026
+
+The student requested a small functional improvement and a new Git commit. Codex added an orange outline and a matching legend label for the wettest day, making the existing peak-rainfall note easier to locate in the calendar. A monthly CSV export adds a reusable table with totals, wet-day counts and peak dates. Both features reuse the saved snapshot and the existing threshold of at least 1 mm; the raw data and colour bands are unchanged. Ties select the earliest date.
+
+This iteration was implemented with AI assistance. It records a real follow-up change on the date above, without altering earlier commit dates or claiming student review has already taken place.
+
+Verification: the offline plotting command succeeded and the PNG was visually inspected for the new border and legend. Independent checks matched all twelve CSV rows against the raw JSON, confirmed the annual total of 1,853.3 mm and 167 wet days, and exercised a dry month, the 1 mm boundary and tied peak dates. The raw JSON SHA-256 still matches the README.

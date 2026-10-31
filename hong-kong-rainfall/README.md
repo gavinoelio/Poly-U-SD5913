@@ -14,7 +14,7 @@ The original JSON contains 365 paired daily records in `daily.time` and `daily.r
 
 Every numbered square represents a date, with Monday at the left; darker colours indicate larger daily totals, and blank spaces fall outside the month. In this snapshot, May through September account for 87.37% of the year's 1,853.3 mm, and the largest daily total is 136.9 mm on 24 September. The colour bands hide exact differences within each band, daily aggregation hides hourly timing and intensity, and a single model grid cell hides spatial variation across Hong Kong; the picture cannot identify the cause of an individual rainy day.
 
-Month headings include their rainfall totals. The headline count of 167 days uses an explicit threshold of at least 1 mm. Zero rain has its own colour; positive values below 1 mm occupy a separate band. The program rejects missing, negative, non-finite, duplicated or out-of-order daily data instead of silently discarding it.
+An orange outline marks the wettest day of the year (the earliest date if values tie). Month headings include their rainfall totals. The headline count of 167 days uses an explicit threshold of at least 1 mm. Zero rain has its own colour; positive values below 1 mm occupy a separate band. The program rejects missing, negative, non-finite, duplicated or out-of-order daily data instead of silently discarding it.
 
 ## Run
 
@@ -22,9 +22,13 @@ Month headings include their rainfall totals. The headline count of 167 days use
 uv run plot.py
 ```
 
+## Monthly statistics
+
+Each run also writes [a monthly summary CSV](out/rainfall-monthly-summary-2025.csv), which can be opened in a spreadsheet. Its twelve rows contain the month, total rainfall in mm, number of days with at least 1 mm, wettest date and that day's rainfall in mm. Tied wettest dates use the earliest date. Statistics use the original daily values before colour banding.
+
 ## Reproducibility
 
-The plot reads only the saved JSON and writes PNG and SVG files to `out/`. Once uv has installed the declared dependency on the first run, subsequent runs can work offline. `fetch.py` documents the original request and preserves an existing snapshot instead of refreshing it. No API key is required. The raw file's SHA-256 is `ac6b76144b3cc60ecb7095405c0616d91c61be09b166d8c63242cbfaf8078527`.
+The plot reads only the saved JSON and writes PNG, SVG and monthly summary CSV files to `out/`. Once uv has installed the declared dependency on the first run, subsequent runs can work offline. `fetch.py` documents the original request and preserves an existing snapshot instead of refreshing it. No API key is required. The raw file's SHA-256 is `ac6b76144b3cc60ecb7095405c0616d91c61be09b166d8c63242cbfaf8078527`.
 
 ## Assignment status
 
